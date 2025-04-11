@@ -12,7 +12,7 @@ import SignUpScreen from './screens/SignUpScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import HomeScreen from './screens/HomeScreen';
 import WalletScreen from './screens/WalletScreen';
-import RechercheScreen from './screens/RechercheScreen';
+import PostScreen from './screens/PostScreen'; 
 import HistoryScreen from './screens/HistoryScreen';
 import ProfileScreen from './screens/ProfileScreen';
 
@@ -60,6 +60,7 @@ function MainApp() {
           else if (route.name === 'Wallet') iconName = 'credit-card';
           else if (route.name === 'History') iconName = 'bookmark';
           else if (route.name === 'Profile') iconName = 'user';
+          else if (route.name === 'Post') iconName = 'plus-circle';
 
           return <Icon name={iconName} size={size} color={color} />;
         },
@@ -70,12 +71,12 @@ function MainApp() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Wallet" component={WalletScreen} />
       <Tab.Screen
-        name="Recherche"
-        component={RechercheScreen}
+        name="Post"
+        component={PostScreen}
         options={{
           tabBarButton: (props: any) => (
             <CustomTabBarButton {...props}>
-              <Icon name="search" size={28} color="white" />
+              <Icon name="plus-circle" size={28} color="white" />
             </CustomTabBarButton>
           ),
         }}
@@ -114,4 +115,3 @@ export default function AppNavigator() {
     </Stack.Navigator>
   );
 }
-
