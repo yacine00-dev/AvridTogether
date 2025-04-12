@@ -1,28 +1,70 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, StyleSheet, ActivityIndicator } from "react-native";
 import { Button } from "react-native-paper";
+import axios from "axios";
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-const ProfileScreen = ({ navigation }) => {
-  const user = {
-    photo: require("../../../assets/images.jpeg"),
-    name: "Sara Hocine",
-    age: 28,
-    rating: 4.5,
-    phone: "+213 4 76 80 78",
-    email: "sarahoc@avid.com",
-    bio: "I am a passionate driver and love sharing my rides with friendly people!",
-  };
+type RootStackParamList = {
+  ProfileScreen: undefined;
+  HistoricalScreen: undefined;
+  CommentScreen: undefined;
+  EditProfileScreen: undefined;
+};
+
+type Props = NativeStackScreenProps<RootStackParamList, 'ProfileScreen'>;
+
+type User = {
+  name: string;
+  age: number;
+  rating: number;
+  phone: string;
+  email: string;
+  bio: string;
+  photo: string;
+};
+
+const ProfileScreen: React.FC<Props> = ({ navigation }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const userId = "123"; // à remplacer si besoin
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`http://<TON-IP>:<PORT>/api/users/${userId}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Erreur lors du chargement du profil :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#191970" />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        <Text>Impossible de charger les informations du profil.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backText}>←</Text>
-      </TouchableOpacity>
-
-      {/* Header with Image and Info */}
+      {/* EN-TÊTE PROFIL */}
       <View style={styles.header}>
-        <Image source={user.photo} style={styles.profileImage} />
+        <Image source={{ uri: user.photo }} style={styles.profileImage} />
         <View style={styles.userInfo}>
           <Text style={styles.name}>{user.name}</Text>
           <Text style={styles.age}>{user.age} years old</Text>
@@ -30,14 +72,14 @@ const ProfileScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Personal Information */}
+      {/* INFOS */}
       <View style={styles.infoContainer}>
         <Text style={styles.info}>📞 {user.phone}</Text>
         <Text style={styles.info}>📧 {user.email}</Text>
       </View>
       <Text style={styles.bio}>{user.bio}</Text>
 
-      {/* Buttons */}
+      {/* BOUTONS */}
       <Button 
         mode="outlined" 
         labelStyle={styles.navyBlueText} 
@@ -82,82 +124,21 @@ const ProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  backButton: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    padding: 10,
-  },
-  backText: {
-    fontSize: 24,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 40,
-    marginBottom: 20,
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginRight: 15, // Pushes text to the right of the image
-  },
-  userInfo: {
-    flex: 1, // Takes the remaining space
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  age: {
-    fontSize: 16,
-    color: "gray",
-  },
-  rating: {
-    fontSize: 18,
-    marginTop: 5,
-  },
-  infoContainer: {
-    marginBottom: 10,
-  },
-  info: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 5,
-  },
-  bio: {
-    fontSize: 14,
-    textAlign: "center",
-    fontStyle: "italic",
-    marginVertical: 10,
-  },
-  outlinedButton: {
-    borderColor: "#191970", // Navy blue border
-    backgroundColor: "#fff",
-    marginVertical: 5,
-  },
-  navyBlueText: {
-    color: "#191970", // Navy blue text
-  },
-  deleteButton: {
-    borderColor: "red",
-    backgroundColor: "#fff",
-    marginVertical: 5,
-  },
-  redText: {
-    color: "red",
-  },
-  logoutButton: {
-    backgroundColor: "red",
-    color: "#fff",
-    marginVertical: 5,
-  },
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  header: { flexDirection: "row", alignItems: "center", marginTop: 40, marginBottom: 20 },
+  profileImage: { width: 100, height: 100, borderRadius: 50, marginRight: 15 },
+  userInfo: { flex: 1 },
+  name: { fontSize: 20, fontWeight: "bold" },
+  age: { fontSize: 16, color: "gray" },
+  rating: { fontSize: 18, marginTop: 5 },
+  infoContainer: { marginBottom: 10 },
+  info: { fontSize: 16, color: "#333", marginBottom: 5 },
+  bio: { fontSize: 14, textAlign: "center", fontStyle: "italic", marginVertical: 10 },
+  outlinedButton: { borderColor: "#191970", backgroundColor: "#fff", marginVertical: 5 },
+  navyBlueText: { color: "#191970" },
+  deleteButton: { borderColor: "red", backgroundColor: "#fff", marginVertical: 5 },
+  redText: { color: "red" },
+  logoutButton: { backgroundColor: "red", color: "#fff", marginVertical: 5 },
 });
 
 export default ProfileScreen;
