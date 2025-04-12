@@ -4,7 +4,7 @@ import { Button } from "react-native-paper";
 
 const ProfileScreen = ({ navigation }) => {
   const user = {
-    photo: require("../../../assets/images.jpeg"), // Replace with a local image
+    photo: require("../../../assets/images.jpeg"),
     name: "Sara Hocine",
     age: 28,
     rating: 4.5,
@@ -42,7 +42,7 @@ const ProfileScreen = ({ navigation }) => {
         mode="outlined" 
         labelStyle={styles.navyBlueText} 
         style={styles.outlinedButton} 
-        onPress={() => alert("View Historical")}
+        onPress={() => navigation.navigate("HistoricalScreen")}
       >
         Historical
       </Button>
@@ -50,7 +50,7 @@ const ProfileScreen = ({ navigation }) => {
         mode="outlined" 
         labelStyle={styles.navyBlueText} 
         style={styles.outlinedButton} 
-        onPress={() => alert("View Comments")}
+        onPress={() => navigation.navigate("CommentScreen")}
       >
         Comment
       </Button>
@@ -161,5 +161,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
-
-
