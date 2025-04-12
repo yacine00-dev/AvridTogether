@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Platform, StyleSheet, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import axios from "axios";
 
 const PosterScreen = () => {
   const [username, setUsername] = useState("");
@@ -17,19 +18,30 @@ const PosterScreen = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
 
-  const handleSubmit = () => {
-    Alert.alert("Ride Details", `
-      Username: ${username}
-      Date: ${date.toLocaleDateString()}
-      Departure: ${departure}
-      Departure Time: ${departureTime.toLocaleTimeString()}
-      Arrival: ${arrival}
-      Arrival Time: ${arrivalTime.toLocaleTimeString()}
-      Available Seats: ${places}
-      Stops: ${stops}
-      Phone: ${phone}
-      Email: ${email}
-    `);
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("http://<TON_BACKEND_URL>/api/poster", {
+        username,
+        date: date.toISOString().split("T")[0],
+        departure,
+        departureTime: departureTime.toLocaleTimeString(),
+        arrival,
+        arrivalTime: arrivalTime.toLocaleTimeString(),
+        places,
+        stops,
+        phone,
+        email,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        Alert.alert("Success", "Your ride has been posted!");
+      } else {
+        Alert.alert("Error", "Something went wrong while posting the ride.");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Failed to connect to the server.");
+    }
   };
 
   return (
@@ -40,10 +52,14 @@ const PosterScreen = () => {
         <TextInput placeholder="Date (DD/MM/YYYY)" value={date.toLocaleDateString()} editable={false} style={styles.input} />
       </TouchableOpacity>
       {showDatePicker && (
-        <DateTimePicker value={date} mode="date" display={Platform.OS === "ios" ? "spinner" : "default"} onChange={(event, selectedDate) => {
-          setShowDatePicker(false);
-          if (selectedDate) setDate(selectedDate);
-        }}
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) setDate(selectedDate);
+          }}
         />
       )}
       <View style={styles.rowContainer}>
@@ -61,12 +77,16 @@ const PosterScreen = () => {
         </View>
       </View>
       {showTimePicker && (
-        <DateTimePicker value={timeType === "departure" ? departureTime : arrivalTime} mode="time" display={Platform.OS === "ios" ? "spinner" : "default"} onChange={(event, selectedTime) => {
-          setShowTimePicker(false);
-          if (selectedTime) {
-            timeType === "departure" ? setDepartureTime(selectedTime) : setArrivalTime(selectedTime);
-          }
-        }}
+        <DateTimePicker
+          value={timeType === "departure" ? departureTime : arrivalTime}
+          mode="time"
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          onChange={(event, selectedTime) => {
+            setShowTimePicker(false);
+            if (selectedTime) {
+              timeType === "departure" ? setDepartureTime(selectedTime) : setArrivalTime(selectedTime);
+            }
+          }}
         />
       )}
       <TextInput placeholder="Available Seats" keyboardType="numeric" value={places} onChangeText={setPlaces} style={styles.input} />
@@ -92,4 +112,6 @@ const styles = StyleSheet.create({
 });
 
 export default PosterScreen;
+
+
 
