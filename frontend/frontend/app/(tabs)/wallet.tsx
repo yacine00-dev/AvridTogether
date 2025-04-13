@@ -53,20 +53,7 @@ export default function WalletScreen() {
             <TouchableOpacity 
             key={index} 
             style={styles.actionButton}
-            onPress={() => {
-                
-                switch(action) {
-                case 'Top up':
-                    navigation.navigate('TopUpScreen');
-                    break;
-                case 'Send':
-                    navigation.navigate('SendScreen');
-                    break;
-                case 'Withdraw':
-                    navigation.navigate('WithdrawScreen');
-                    break;
-                }
-            }}
+           
             >
             <View style={styles.buttonContent}>
                 <MaterialIcons
@@ -93,7 +80,7 @@ export default function WalletScreen() {
         <View style={styles.transactionsContainer}>
         <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Transactions</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('TransactionHistory')}>
+            <TouchableOpacity >
             <Text style={styles.viewAll}>View all</Text>
             </TouchableOpacity>
         </View>

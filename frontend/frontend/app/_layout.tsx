@@ -14,20 +14,23 @@ export default function RootLayout() {
           headerShown: false
         }} 
       />
+      
       <Stack.Screen 
-        name="home" 
+        name="comment/comment" 
         options={{ 
-          presentation: 'modal',
-          headerShown: false
+          headerShown: false, // Masquer le header
+      
         }} 
       />
-      <Stack.Screen 
-  name="settings" 
-  options={{ 
-    headerShown: true,
-    title: 'Paramètres'
-  }} 
-/>
+
+<Stack.Screen 
+        name="trajet/trajet" 
+        options={{
+          title: 'Résultats de recherche',
+          headerShown: false, // Afficher un header pour cette page
+          headerBackTitle: 'Retour'
+        }}
+      />
     </Stack>
   
   );

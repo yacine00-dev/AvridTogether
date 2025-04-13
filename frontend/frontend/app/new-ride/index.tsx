@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Platform, StyleSheet, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const PosterScreen = () => {
+  const navigation = useNavigation();
   const [username, setUsername] = useState("");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -34,7 +37,14 @@ const PosterScreen = () => {
 
   return (
     <View style={{ flex: 1, padding: 20, backgroundColor: "#f5f5f5" }}>
-      <Text style={styles.title}>🚗 <Text style={{ color: "#003366" }}>Post a Ride</Text></Text>
+      {/* Header avec bouton retour */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#003366" />
+        </TouchableOpacity>
+        <Text style={styles.title}>🚗 <Text style={{ color: "#003366" }}>Post a Ride</Text></Text>
+      </View>
+
       <TextInput placeholder="Username" value={username} onChangeText={setUsername} style={styles.input} />
       <TouchableOpacity onPress={() => setShowDatePicker(true)}>
         <TextInput placeholder="Date (DD/MM/YYYY)" value={date.toLocaleDateString()} editable={false} style={styles.input} />
@@ -83,13 +93,51 @@ const PosterScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  title: { fontSize: 24, fontWeight: "bold", color: "#003366", textAlign: "center", marginBottom: 15 },
-  input: { backgroundColor: "white", padding: 12, borderRadius: 5, fontSize: 16, marginBottom: 10, borderWidth: 1, borderColor: "#ddd" },
-  rowContainer: { flexDirection: "row", justifyContent: "space-between" },
-  column: { flex: 1, marginHorizontal: 5 },
-  button: { backgroundColor: "#003366", padding: 16, borderRadius: 5, alignItems: "center", marginTop: 10 },
-  buttonText: { color: "white", fontSize: 18, fontWeight: "bold" }
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  backButton: {
+    marginRight: 10,
+  },
+  title: { 
+    fontSize: 24, 
+    fontWeight: "bold", 
+    color: "#003366", 
+    textAlign: "center",
+    flex: 1,
+    padding: 20,
+  },
+  input: { 
+    backgroundColor: "white", 
+    padding: 12, 
+    borderRadius: 5, 
+    fontSize: 16, 
+    marginBottom: 10, 
+    borderWidth: 1, 
+    borderColor: "#ddd" 
+  },
+  rowContainer: { 
+    flexDirection: "row", 
+    justifyContent: "space-between" 
+  },
+  column: { 
+    flex: 1, 
+    marginHorizontal: 5 
+  },
+  button: { 
+    backgroundColor: "#003366", 
+    padding: 16, 
+    borderRadius: 5, 
+    alignItems: "center", 
+    marginTop: 10 
+  },
+  buttonText: { 
+    color: "white", 
+    fontSize: 18, 
+    fontWeight: "bold" 
+  }
 });
 
 export default PosterScreen;
-

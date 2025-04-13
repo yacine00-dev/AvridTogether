@@ -83,7 +83,7 @@ const PosterScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  title: { fontSize: 24, fontWeight: "bold", color: "#003366", textAlign: "center", marginBottom: 15 },
+  title: { fontSize: 24,padding: 20, fontWeight: "bold", color: "#003366", textAlign: "center", marginBottom: 15 },
   input: { backgroundColor: "white", padding: 12, borderRadius: 5, fontSize: 16, marginBottom: 10, borderWidth: 1, borderColor: "#ddd" },
   rowContainer: { flexDirection: "row", justifyContent: "space-between" },
   column: { flex: 1, marginHorizontal: 5 },

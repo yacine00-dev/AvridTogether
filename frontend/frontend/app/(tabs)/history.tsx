@@ -2,7 +2,6 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import { useNavigation } from '@react-navigation/native';
 
 const COLORS = {
@@ -18,34 +17,29 @@ const activities = [
     date: "29 Jan 2025 at 06:07",
     amount: "1343,0 DZD",
     pickup: "RN 5, Hussin Dey, Algiers",
-    destination: "Azeffun,Tizi Ouzou"
+    destination: "Azeffun,Tizi Ouzou",
+    driver: {
+      name: "Mohamed K.",
+      rating: 4.8,
+      avatar: require("@/assets/images/driver2.png")
+    }
   },
   {
     date: "03 Jan 2025 at 15:02",
     amount: "3541,0 DZD",
     pickup: "RN 5, Hussin Dey, Algiers",
-    destination: "Ain beida, Oum el bouaghi"
+    destination: "Ain beida, Oum el bouaghi",
+    driver: {
+      name: "Karim B.",
+      rating: 4.5,
+      avatar: require("@/assets/images/driver1.png")
+    }
   },
-  {
-    date: "29 Jan 2025 at 06:07",
-    amount: "1343,0 DZD",
-    pickup: "RN 5, Hussin Dey, Algiers",
-    destination: "Azeffun,Tizi Ouzou"
-  },
-  {
-    date: "03 Jan 2025 at 15:02",
-    amount: "3541,0 DZD",
-    pickup: "RN 5, Hussin Dey, Algiers",
-    destination: "Ain beida, Oum el bouaghi"
-  },
-  
-  
+  // ... autres trajets
 ];
 
 export default function HistoryScreen() {
-
   const navigation = useNavigation();
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,6 +78,21 @@ export default function HistoryScreen() {
             
             <View style={styles.divider} />
             
+            {/* Section Chauffeur */}
+            <View style={styles.driverContainer}>
+              <Image 
+                source={activity.driver.avatar} 
+                style={styles.driverAvatar} 
+              />
+              <View style={styles.driverInfo}>
+                <Text style={styles.driverName}>{activity.driver.name}</Text>
+                <View style={styles.ratingContainer}>
+                  <MaterialIcons name="star" size={16} color="#FFD700" />
+                  <Text style={styles.driverRating}>{activity.driver.rating}</Text>
+                </View>
+              </View>
+            </View>
+
             <View style={styles.addressSection}>
               <Text style={styles.addressLabel}>Pickup</Text>
               <Text style={styles.addressText}>{activity.pickup}</Text>
@@ -94,23 +103,20 @@ export default function HistoryScreen() {
               <Text style={styles.addressText}>{activity.destination}</Text>
             </View>
 
-            <TouchableOpacity style={styles.requestButton}>
-                <View style={styles.leftDateSection}>
-                <MaterialIcons 
-                  name="repeat" 
-                  size={18} 
-                  color={COLORS.white}
-                  style={styles.checkIcon}
-                />
-                <Text style={styles.requestButtonText}>Request again</Text>
+            <TouchableOpacity 
+              style={styles.requestButton}
+              onPress={() => navigation.navigate('comment/comment', { 
+                driverName: activity.driver.name,
+                driverAvatar: activity.driver.avatar
+              })}
+            >
+              <View style={styles.leftDateSection}>
+                <Text style={styles.requestButtonText}>Évaluer</Text>
               </View>
-              
             </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
-
-      
     </SafeAreaView>
   );
 }
@@ -293,5 +299,39 @@ const styles = StyleSheet.create({
       fontSize: 12,
       marginTop: 4,
       fontWeight: '500',
+    },
+    driverContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 15,
+      paddingVertical: 8,
+      borderBottomWidth: 1,
+      borderBottomColor: '#f0f0f0'
+    },
+    driverAvatar: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      marginRight: 12,
+      borderWidth: 1,
+      borderColor: COLORS.border
+    },
+    driverInfo: {
+      flex: 1
+    },
+    driverName: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: COLORS.primary,
+      marginBottom: 4
+    },
+    ratingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    driverRating: {
+      marginLeft: 5,
+      color: COLORS.text,
+      fontSize: 14
     },
   });

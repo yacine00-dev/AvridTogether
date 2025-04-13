@@ -1,9 +1,9 @@
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { useRef } from 'react';
-
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView,FlatList } from "react-native";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, TextInput } from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { useRouter } from 'expo-router';
 
 // Couleurs constantes
 const COLORS = {
@@ -15,55 +15,133 @@ const COLORS = {
 };
 
 export default function HomeScreen() {
+  const [departure, setDeparture] = useState("");
+  const [arrival, setArrival] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [hour, setHour] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showHourPicker, setShowHourPicker] = useState(false);
+
+  const router = useRouter();
+
+  const handleSearch = () => {
+    router.push({
+      pathname: '/trajet/trajet',
+      params: {
+        departure: departure,
+        arrival: arrival,
+        date: date.toLocaleDateString(),
+        time: hour.toLocaleTimeString()
+      }
+    });
+  };
+
+  const onChangeDate = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+    }
+  };
+
+  const onChangeHour = (event, selectedHour) => {
+    setShowHourPicker(false);
+    if (selectedHour) {
+      setHour(selectedHour);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
 
       <ScrollView 
         style={{ flex: 1 }} 
-        contentContainerStyle={{ flexGrow: 1 }} 
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }} 
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.locationContainer}>
-            <Ionicons name="location-sharp" size={16} color={COLORS.primary} />
-            <Text style={styles.location}>46GX58T, Tizi Ouzou</Text>
-        </View>
-
-
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <Image 
-              source={require("../../assets/images/driver1.png")} // Chemin vers l'image
-              style={{ width: 50, height: 50, borderRadius:50, alignSelf: 'flex-end', marginTop: 20 }} // Ajuste la taille
-            />
+            <Ionicons name="location-sharp" size={25} color={COLORS.primary} />
+            <View style={styles.locationTextContainer}>
+              <Text style={styles.locationLabel}>LOCATION</Text>
+              <Text style={styles.location}>46GX58T, Tizi Ouzou</Text>
+            </View>
           </View>
+          <Image 
+            source={require("@/assets/images/driver2.png")}
+            style={styles.profileImage}
+          />
         </View>
 
         {/* Titres */}
         <View style={styles.titleContainer}>
-          <Text style={styles.welcome}>Welcome back, Isma !</Text>
+          <Text style={styles.welcome}>Welcome back, Abderezak !</Text>
           <Text style={styles.bookingTitle}>Book your ride</Text>
         </View>
 
         {/* Formulaire */}
         <View style={styles.bookingContainer}>
-          {["Departure", "Arrival", "Date", "Hour"].map((label, index) => (
-            <TouchableOpacity key={index} style={styles.inputField}>
-              <MaterialIcons 
-                name={
-                  label === "Departure" ? "place" :
-                  label === "Arrival" ? "flag" :
-                  label === "Date" ? "date-range" : "timer"
-                } 
-                size={24} 
-                color={COLORS.primary} 
-              />
-              <Text style={styles.inputText}>{label}</Text>
-            </TouchableOpacity>
-          ))}
+          {/* Departure */}
+          <View style={styles.fieldContainer}>
+            <MaterialIcons name="place" size={24} color={COLORS.primary} />
+            <TextInput
+              style={[styles.inputField, { flex: 1 }]}
+              value={departure}
+              onChangeText={setDeparture}
+              placeholder="Enter departure"
+              placeholderTextColor={COLORS.text}
+            />
+          </View>
 
-          <TouchableOpacity style={styles.searchButton}>
+          {/* Arrival */}
+          <View style={styles.fieldContainer}>
+            <MaterialIcons name="flag" size={24} color={COLORS.primary} />
+            <TextInput
+              style={[styles.inputField, { flex: 1 }]}
+              value={arrival}
+              onChangeText={setArrival}
+              placeholder="Enter arrival"
+              placeholderTextColor={COLORS.text}
+            />
+          </View>
+
+          {/* Date */}
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.inputField}>
+            <MaterialIcons name="date-range" size={24} color={COLORS.primary} />
+            <Text style={[styles.inputText, { marginLeft: 10 }]}>
+              {date.toLocaleDateString()}
+            </Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="calendar"
+              onChange={onChangeDate}
+            />
+          )}
+
+          {/* Hour */}
+          <TouchableOpacity onPress={() => setShowHourPicker(true)} style={styles.inputField}>
+            <MaterialIcons name="timer" size={24} color={COLORS.primary} />
+            <Text style={[styles.inputText, { marginLeft: 10 }]}>
+              {hour.toLocaleTimeString()}
+            </Text>
+          </TouchableOpacity>
+          {showHourPicker && (
+            <DateTimePicker
+              value={hour}
+              mode="time"
+              display="clock"
+              onChange={onChangeHour}
+            />
+          )}
+
+          <TouchableOpacity 
+            style={styles.searchButton}
+            onPress={handleSearch}
+          >
             <Text style={styles.searchText}>SEARCH</Text>
           </TouchableOpacity>
         </View>
@@ -78,8 +156,6 @@ export default function HomeScreen() {
           ))}
         </View>
       </ScrollView>
-
-    
     </SafeAreaView>
   );
 }
@@ -91,29 +167,38 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    padding: 20,
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingTop: 30,
   },
   locationContainer: {
-    position: 'absolute',
-    top: '50%',
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transform: [{ translateY: 20 }] // Ajuste -20 selon la hauteur du conteneur
-  }
-  
-  ,
-  location: {
-    marginLeft: 5,
-    color: COLORS.primary,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  locationTextContainer: {
+    marginLeft: 10,
+  },
+  locationLabel: {
+    fontSize: 12,
+    color: COLORS.text,
     fontWeight: "500",
   },
+  location: {
+    fontSize: 16,
+    color: COLORS.primary,
+    fontWeight: "600",
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
   titleContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 10,
+    paddingHorizontal: 25,
+    marginTop: 15,
+    marginBottom: 20,
   },
   welcome: {
     fontSize: 24,
@@ -126,7 +211,17 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   bookingContainer: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 15,
+  },
+  fieldContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
   },
   inputField: {
     flexDirection: "row",
@@ -138,8 +233,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   inputText: {
-    marginLeft: 10,
     color: COLORS.text,
+    fontSize: 16,
   },
   searchButton: {
     backgroundColor: COLORS.primary,
@@ -154,8 +249,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   discountsContainer: {
-    padding: 20,
-    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 15,
   },
   sectionTitle: {
     fontSize: 18,
@@ -173,67 +268,6 @@ const styles = StyleSheet.create({
   },
   promoText: {
     color: COLORS.text,
-  },
-  navContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 70,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#F8FAFC',
-    backgroundColor: 'white',
-    position: 'relative',
-  },
-  leftGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '40%',
-    paddingLeft: 10,
-  },
-  rightGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '40%',
-    justifyContent: 'flex-end',
-    paddingRight: 10,
-  },
-  navItem: {
-    alignItems: 'center',
-    paddingHorizontal: 8,
-  },
-  centralButton: {
-    position: 'absolute',
-    left: '50%',
-    bottom: 20,
-    transform: [{ translateX: -35 }],
-    backgroundColor: '#052659',
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    borderColor: '#F8FAFC',
-    borderWidth: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-  },
-  activeText: {
-    color: '#052659',
-    fontSize: 12,
-    marginTop: 4,
-    fontWeight: '600',
-  },
-  inactiveText: {
-    color: '#8C8994',
-    fontSize: 12,
-    marginTop: 4,
-    fontWeight: '500',
+    fontSize: 15,
   },
 });
-
-
-
-// export default HomeScreen; (removed duplicate export)
