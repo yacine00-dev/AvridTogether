@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Platform, StyleSheet, Alert } from "react-native";
+import { ActivityIndicator, View, Text, TextInput, TouchableOpacity, Platform, StyleSheet, Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
+import { Redirect } from 'expo-router';
+import { useAuth } from '../../context/AuthContext';
 
 const PosterScreen = () => {
   const [username, setUsername] = useState("");
@@ -17,6 +20,9 @@ const PosterScreen = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
 
+  const { isAuthenticated, isLoading } = useAuth();
+
+
   const handleSubmit = () => {
     Alert.alert("Ride Details", `
       Username: ${username}
@@ -31,7 +37,13 @@ const PosterScreen = () => {
       Email: ${email}
     `);
   };
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
 
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
   return (
     <View style={{ flex: 1, padding: 20, backgroundColor: "#f5f5f5" }}>
       <Text style={styles.title}>🚗 <Text style={{ color: "#003366" }}>Post a Ride</Text></Text>

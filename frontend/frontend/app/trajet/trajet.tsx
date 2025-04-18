@@ -1,10 +1,9 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect } from "react"; 
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image,ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { ActivityIndicator, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, Alert, Animated } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { useNavigation } from '@react-navigation/native';
-import { Animated } from 'react-native';
-
+import { useRouter } from 'expo-router';
+import axios from 'axios';
 
 const COLORS = {
   primary: "#032354",
@@ -14,182 +13,147 @@ const COLORS = {
   white: "#FFFFFF",
 };
 
-const rides = [
-    {
-        id: '1',
-        driver: "OUADAH SALIM",
-        phone: "+213777767777",
-        rating: 4,
-        price: "1343,0",
-        pickup: "RN 5, Hussin Dey, Algiers",
-        destination: "Azeffun,Tizi Ouzou",
-        car: "Blue Hyundai Elentra BT-015-TT",
-        photo: require('@/assets/images/driver1.png')
-      },
-      {
-        id: '2',
-        driver: "CHARERBACHE MHAMED",
-        phone: "+213555667788",
-        rating: 5,
-        price: "1500,0",
-        pickup: "Cité Amirouche, Alger Centre",
-        destination: "Bab Ezzouar, Alger",
-        car: "White Renault Symbol DX-456-AB",
-        photo: require('@/assets/images/driver2.png')
-      },
-      {
-        id: '3',
-        driver: "GOUMARI SALIMA",
-        phone: "+213798654321",
-        rating: 3,
-        price: "1200,5",
-        pickup: "Boulevard Zighout Youcef, Oran",
-        destination: "Es Senia, Oran",
-        car: "Red Fiat Punto TR-789-ZY",
-        photo: require('@/assets/images/driver3.png')
+export default function AvailableRidesScreen() {
+  const router = useRouter();
+  const [rides, setRides] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRides = async () => {
+      try {
+        const response = await axios.get("http://<TON_BACKEND_URL>/api/rides");
+        setRides(response.data);
+      } catch (error) {
+        Alert.alert("Erreur", "Impossible de récupérer les trajets depuis le serveur.");
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
-];
-
-
-const RideItem = React.memo(({ ride }) => {
-    const [acceptScale] = useState(new Animated.Value(1));
-    const [declineShake] = useState(new Animated.Value(0));
-  
-    const handleAcceptAnimation = () => {
-      Animated.sequence([
-        Animated.timing(acceptScale, {
-          toValue: 0.9,
-          duration: 50,
-          useNativeDriver: true,
-        }),
-        Animated.spring(acceptScale, {
-          toValue: 1,
-          friction: 3,
-          useNativeDriver: true,
-        }),
-      ]).start();
-      console.log('Accepté:', ride.id);
     };
-  
-    const handleDeclineAnimation = () => {
-      declineShake.setValue(0);
-      Animated.sequence([
-        Animated.timing(declineShake, {
-          toValue: 5,
-          duration: 50,
-          useNativeDriver: true,
-        }),
-        Animated.timing(declineShake, {
-          toValue: -5,
-          duration: 50,
-          useNativeDriver: true,
-        }),
-        Animated.timing(declineShake, {
-          toValue: 0,
-          duration: 50,
-          useNativeDriver: true,
-        }),
-      ]).start();
-      console.log('Refusé:', ride.id);
-    };
-  
-    return (
-      <View style={styles.rideCard}>
-        {/* Section Conducteur */}
-        <View style={styles.driverSection}>
-          <View style={styles.driverInfo}>
-            <Image source={ride.photo} style={styles.driverPhoto} />
-            <View style={styles.driverText}>
-              <Text style={styles.driverName}>{ride.driver}</Text>
-              <Text style={styles.driverPhone}>{ride.phone}</Text>
-              <View style={styles.ratingContainer}>
-                {[1, 2, 3, 4, 5].map((index) => (
-                  <MaterialIcons 
-                    key={index}
-                    name={index <= ride.rating ? "star" : "star-border"}
-                    size={16}
-                    color="#FFD700"
-                  />
-                ))}
-              </View>
-            </View>
-          </View>
-          <View style={styles.priceBadge}>
-            <Text style={styles.priceText}>{ride.price} DZD</Text>
-          </View>
-        </View>
-  
-        {/* Adresses */}
-        <MaterialIcons name="location-pin" size={20} color={COLORS.primary} />
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Pickup</Text>
-          <Text style={styles.sectionContent}>{ride.pickup}</Text>
-        </View>
 
-        <MaterialIcons name="flag" size={20} color={COLORS.primary} />
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Destination</Text>
-          <Text style={styles.sectionContent}>{ride.destination}</Text>
-        </View>
-  
-        {/* Véhicule */}
-        <Text style={styles.carInfo}>{ride.car}</Text>
-        <View style={styles.separator} />
-  
-        {/* Boutons avec animations */}
-        <View style={styles.buttonContainer}>
-          <Animated.View style={{ transform: [{ translateX: declineShake }] }}>
-            <TouchableOpacity 
-              style={styles.declineButton}
-              onPress={handleDeclineAnimation}
-            >
-              <MaterialIcons name="close" size={18} color={COLORS.primary} />
-              <Text style={styles.DeclineText}>Decline</Text>
-            </TouchableOpacity>
-          </Animated.View>
-  
-          <Animated.View style={{ transform: [{ scale: acceptScale }] }}>
-            <TouchableOpacity 
-              style={styles.acceptButton}
-              onPress={handleAcceptAnimation}
-            >
-              <MaterialIcons name="check" size={18} color={COLORS.white} />
-              <Text style={styles.AcceptText}>Accept</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
+    fetchRides();
+  }, []);
+
+  const handleDecline = (rideId) => {
+    setRides(prev => prev.filter(r => r.id !== rideId));
+  };
+
+  const handleAccept = (rideId) => {
+    router.push('wating_passenger/wating_passenger', { params: { rideId } });
+  };
+ 
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="auto" />
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color={COLORS.primary} />
+        </TouchableOpacity>
+        <Text style={styles.screenTitle}>Available rides</Text>
       </View>
-    );
-  });
 
-  export default function AvailableRidesScreen() {
-    const navigation = useNavigation();
-  
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar style="auto" />
-  
-        {/* En-tête */}
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton} 
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color={COLORS.primary} />
-          </TouchableOpacity>
-          <Text style={styles.screenTitle}>Available rides</Text>
-        </View>
-  
-        {/* Liste des trajets */}
+      {loading ? (
+        <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 50 }} />
+      ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {rides.map((ride) => (
-            <RideItem key={ride.id} ride={ride} />
+            <RideItem
+              key={ride.id}
+              ride={ride}
+              onDecline={() => handleDecline(ride.id)}
+              onAccept={() => handleAccept(ride.id)}
+            />
           ))}
         </ScrollView>
-      </SafeAreaView>
-    );
-  }
-  
+      )}
+    </SafeAreaView>
+  );
+}
+
+const RideItem = React.memo(({ ride, onAccept, onDecline }) => {
+  const [acceptScale] = useState(new Animated.Value(1));
+  const [declineShake] = useState(new Animated.Value(0));
+
+  const handleAcceptAnimation = async () => {
+    await Animated.sequence([
+      Animated.timing(acceptScale, { toValue: 0.9, duration: 50, useNativeDriver: true }),
+      Animated.spring(acceptScale, { toValue: 1, friction: 3, useNativeDriver: true }),
+    ]).start();
+    onAccept();
+  };
+
+  const handleDeclineAnimation = () => {
+    declineShake.setValue(0);
+    Animated.sequence([
+      Animated.timing(declineShake, { toValue: 5, duration: 50, useNativeDriver: true }),
+      Animated.timing(declineShake, { toValue: -5, duration: 50, useNativeDriver: true }),
+      Animated.timing(declineShake, { toValue: 0, duration: 50, useNativeDriver: true }),
+    ]).start(() => {
+      onDecline();
+    });
+  };
+
+  return (
+    <View style={styles.rideCard}>
+      {/* Section Conducteur */}
+      <View style={styles.driverSection}>
+        <View style={styles.driverInfo}>
+          <Image source={{ uri: ride.photo || "https://via.placeholder.com/50" }} style={styles.driverPhoto} />
+          <View style={styles.driverText}>
+            <Text style={styles.driverName}>{ride.driver}</Text>
+            <Text style={styles.driverPhone}>{ride.phone}</Text>
+            <View style={styles.ratingContainer}>
+              {[1, 2, 3, 4, 5].map((index) => (
+                <MaterialIcons
+                  key={index}
+                  name={index <= ride.rating ? "star" : "star-border"}
+                  size={16}
+                  color="#FFD700"
+                />
+              ))}
+            </View>
+          </View>
+        </View>
+        <View style={styles.priceBadge}>
+          <Text style={styles.priceText}>{ride.price} DZD</Text>
+        </View>
+      </View>
+
+      {/* Pickup et Destination */}
+      <MaterialIcons name="location-pin" size={20} color={COLORS.primary} />
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Pickup</Text>
+        <Text style={styles.sectionContent}>{ride.pickup}</Text>
+      </View>
+
+      <MaterialIcons name="flag" size={20} color={COLORS.primary} />
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Destination</Text>
+        <Text style={styles.sectionContent}>{ride.destination}</Text>
+      </View>
+
+      <Text style={styles.carInfo}>{ride.car}</Text>
+      <View style={styles.separator} />
+
+      {/* Boutons d'action */}
+      <View style={styles.buttonContainer}>
+        <Animated.View style={{ transform: [{ translateX: declineShake }] }}>
+          <TouchableOpacity style={styles.declineButton} onPress={handleDeclineAnimation}>
+            <MaterialIcons name="close" size={18} color={COLORS.primary} />
+            <Text style={styles.DeclineText}>Decline</Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        <Animated.View style={{ transform: [{ scale: acceptScale }] }}>
+          <TouchableOpacity style={styles.acceptButton} onPress={handleAcceptAnimation}>
+            <MaterialIcons name="check" size={18} color={COLORS.white} />
+            <Text style={styles.AcceptText}>Accept</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -214,17 +178,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.primary,
     marginLeft: 8,
-  },
-  timeContainer: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 12,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    marginLeft: 'auto',
-  },
-  timeText: {
-    fontSize: 14,
-    color: COLORS.primary,
   },
   scrollContent: {
     padding: 16,
@@ -263,7 +216,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     marginBottom: 4,
   },
-  phone: {
+  driverPhone: {
     fontSize: 16,
     color: COLORS.text,
     marginBottom: 16,
@@ -335,17 +288,14 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     gap: 8,
   },
-  iconStyle: {
-    marginRight: 5, 
-  },
-    AcceptText: {
+  AcceptText: {
     color: COLORS.white,
     fontWeight: 'bold',
     fontSize: 16,
   },
-    DeclineText: {
-        color: "#011023",
-        fontWeight: 'bold',
-        fontSize: 16,
-      },
+  DeclineText: {
+    color: "#011023",
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });

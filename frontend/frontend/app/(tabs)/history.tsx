@@ -1,8 +1,11 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView } from "react-native";
+import { ActivityIndicator, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
+
+import { Redirect, router } from 'expo-router';
+import { useAuth } from '../../context/AuthContext';
 
 const COLORS = {
   primary: "#032354",
@@ -39,8 +42,18 @@ const activities = [
 ];
 
 export default function HistoryScreen() {
+  /*pour la verification
   const navigation = useNavigation();
+  const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
+    */
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
@@ -105,9 +118,12 @@ export default function HistoryScreen() {
 
             <TouchableOpacity 
               style={styles.requestButton}
-              onPress={() => navigation.navigate('comment/comment', { 
-                driverName: activity.driver.name,
-                driverAvatar: activity.driver.avatar
+              onPress={() => router.push({
+                pathname: '/comment/comment',
+                params: { 
+                  driverName: activity.driver.name,
+                  driverAvatar: activity.driver.avatar
+                }
               })}
             >
               <View style={styles.leftDateSection}>

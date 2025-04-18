@@ -1,9 +1,11 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView } from "react-native";
+import { ActivityIndicator, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Redirect } from 'expo-router';
+import { useAuth } from '../../context/AuthContext';
 
 const COLORS = {
   primary: "#032354",
@@ -14,6 +16,20 @@ const COLORS = {
 };
 
 export default function WalletScreen() {
+/*pour la verificatio
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
+    */
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />

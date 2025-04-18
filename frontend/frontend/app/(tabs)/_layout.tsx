@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useRouter, router } from 'expo-router';
 
 export default function TabsLayout() {
   const navigation = useNavigation();

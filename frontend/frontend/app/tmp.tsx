@@ -1,9 +1,9 @@
 import { Stack, useRouter } from 'expo-router';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+
 export default function RootLayout() {
-  /*return (
+  return (
     <AuthProvider>
       <RootLayoutNav />
     </AuthProvider>
@@ -11,7 +11,6 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  /*pour la verification
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
@@ -25,19 +24,13 @@ function RootLayoutNav() {
     }
   }, [isAuthenticated, isLoading]);
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-*/
+  if (isLoading) return null;
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
       {/* Routes publiques */}
-      <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)/signup" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      
       {/* Routes protégées */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       
@@ -48,11 +41,6 @@ function RootLayoutNav() {
       />
       <Stack.Screen name="comment/comment" />
       <Stack.Screen name="trajet/trajet" />
-      <Stack.Screen name="commentaire/CommentScreen" />
-      <Stack.Screen name="acceuille/acceuille" />
-      <Stack.Screen name="driverRes/DriverReservations" />
-      <Stack.Screen name="EditProfile/EditProfile" />
-      <Stack.Screen name="wating_passenger/wating_passenger" />
     </Stack>
   );
 }
