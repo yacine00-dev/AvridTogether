@@ -72,9 +72,11 @@ const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
       />
       <TextInput
         style={styles.input}
-        value={String(user.age)}
+        value={user.age === 0 ? "" : String(user.age)}
         keyboardType="numeric"
-        onChangeText={(text) => setUser({ ...user, age: Number(text) })}
+        onChangeText={(text) =>
+          setUser({ ...user, age: text === "" ? 0 : Number(text) })
+        }
         placeholder="Age"
       />
       <TextInput
