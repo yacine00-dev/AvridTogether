@@ -27,7 +27,7 @@ class CustomUserManager(BaseUserManager):
 
 class profile(AbstractBaseUser,PermissionsMixin):
     #user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,primary_key=True) # in case you want youre user to inherite from django defined user uncomment one of the lines 
-    #user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
+#2user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     email = models.EmailField(unique=True)
     user_pic = models.ImageField(null=True ,upload_to="profile/pfimage", height_field=None, width_field=None, max_length=None) #need to specifie the path in the data base 
     
@@ -40,7 +40,7 @@ class profile(AbstractBaseUser,PermissionsMixin):
              clien :"clien",}
     type_user = models.CharField(max_length=10 , choices = utypes , default=clien,blank=True, null=True)
     ppermis_ic = models.ImageField(null=True ,upload_to="profile/permis_ic", height_field=None, width_field=None, max_length=None) #need to specifie the path in the data base 
-    rating = models.IntegerField(default=0) #need to ask how the frant end will implent in order to know how to define it 
+    age = models.IntegerField(default=0) 
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -60,3 +60,12 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         profile.objects.create(user=instance)    
     
+class comments_rating (models.Model):
+        title = models.CharField(max_length=25)
+        rating = models.IntegerField(default=0)
+        comment = models.TextField()
+        author_comment = models.ForeignKey(profile, on_delete=models.CASCADE, related_name='author_comment') # the user who rate and write the comment
+        received_user= models.ForeignKey(profile , on_delete=models.CASCADE , related_name='received_user') #the user who receveices both comment and rating s
+
+        def __str__(self):
+            return self.title
